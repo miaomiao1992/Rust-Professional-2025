@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,18 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut idx = self.count;
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                self.items.swap(idx, parent_idx);
+                idx = parent_idx;
+            } else {
+                break;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +67,27 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+
+        // 检查左子节点是否存在
+        if left_idx > self.count {
+            // 如果左子节点不存在，那么右子节点也不存在
+            return idx; // 返回当前索引，表示没有子节点
+        }
+
+        // 检查右子节点是否存在
+        if right_idx > self.count {
+            // 如果只有左子节点存在，返回左子节点的索引
+            return left_idx;
+        }
+
+        // 如果两个子节点都存在，比较它们，并返回较小值的索引
+        if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+            left_idx
+        } else {
+            right_idx
+        }
     }
 }
 
@@ -84,8 +113,26 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        let top = self.items.swap_remove(1);
+        self.count -= 1;
+
+        if self.count > 0 {
+            let mut idx = 1;
+            while self.children_present(idx) {
+                let smallest_child_idx = self.smallest_child_idx(idx);
+                if (self.comparator)(&self.items[smallest_child_idx], &self.items[idx]) {
+                    self.items.swap(smallest_child_idx, idx);
+                    idx = smallest_child_idx;
+                } else {
+                    break;
+                }
+            }
+        }
+        Some(top)
     }
 }
 

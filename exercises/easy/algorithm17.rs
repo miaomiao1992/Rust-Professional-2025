@@ -11,9 +11,18 @@
 
 use std::fmt::{self, Display, Formatter};
 
+use std::collections::HashSet;
+
 pub fn intersection(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-    // TODO: Implement the logic to find the intersection of two arrays
-    Vec::new() // Placeholder return value
+    // 将 nums1 转换为哈希集合，自动去重
+    let set1: HashSet<_> = nums1.into_iter().collect();
+    // 将 nums2 转换为哈希集合，自动去重
+    let set2: HashSet<_> = nums2.into_iter().collect();
+
+    // 找到两个集合的交集，并转换为向量
+    let mut ans: Vec<i32> = set1.intersection(&set2).cloned().collect();
+    ans.sort();
+    ans
 }
 
 #[cfg(test)]
